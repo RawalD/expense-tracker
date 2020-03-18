@@ -6,14 +6,16 @@ const balance = document.getElementById('balance'),
     textInput = document.getElementById('text'),
     amount = document.getElementById('amount');
 
-    const dummyTransactions = [
-        {id:1, text: "Flowers", amount: -30},
-        {id:2, text: "Cards", amount: -55},
-        {id:3, text: "Salary", amount: 500},
-        {id:4, text: "Chocolates", amount: -120}
-    ];
+    // const dummyTransactions = [
+    //     {id:1, text: "Flowers", amount: -30},
+    //     {id:2, text: "Cards", amount: -55},
+    //     {id:3, text: "Salary", amount: 500},
+    //     {id:4, text: "Chocolates", amount: -120}
+    // ];
 
-    let transactions = dummyTransactions;
+    const localStorageTransactions = JSON.parse(localStorage.getItem('transactions'));
+
+    let transactions = localStorage.getItem('transactions') !== null ? localStorageTransactions : [];
 
     //add transactions
     function addTransaction(e){
@@ -30,8 +32,11 @@ const balance = document.getElementById('balance'),
 
             //console.log(transaction);
             transactions.push(transaction);
+
             addTransactionDOM(transaction);
             updateBalances();
+            updateToLocalStorage();
+
             text.value = '';
             amount.value = '';
         }
@@ -60,7 +65,7 @@ function generateID(){
   
         item.innerHTML = `
             ${transaction.text} <span>${sign}${Math.abs(transaction.amount)}</span>
-            <button class="delete-btn" onclick="removeTransaction(${transaction.id}">x</button>
+            <button class="delete-btn" onclick="removeTransaction(${transaction.id})">x</button>
             `;
             listOfTransactions.appendChild(item);
             
@@ -69,6 +74,8 @@ function generateID(){
 //remove from dom
 function removeTransaction(transactionID){
     transactions = transactions.filter(transaction => transaction.id !== transactionID);
+    
+    updateToLocalStorage();
 
     init();
 }
@@ -99,6 +106,11 @@ function updateBalances(){
     moneyPlus.innerText = `R ${income}`;
     moneyMinus.innerText =`R ${expense}`;
         
+}
+
+//add to local storage
+function updateToLocalStorage(){
+    localStorage.setItem('transactions', JSON.stringify(transactions));
 }
     
 //initialise app
